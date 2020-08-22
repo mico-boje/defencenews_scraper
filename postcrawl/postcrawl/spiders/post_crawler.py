@@ -1,41 +1,34 @@
 import scrapy
+import json
 from scrapy.spiders import CrawlSpider, Rule
 
 
 class PostsSpider(scrapy.Spider):
-    name = "links"
-    start_urls = [
-        'https://www.defensenews.com/stories/air/1/',
-        'https://www.defensenews.com/stories/air/21/',
-        'https://www.defensenews.com/stories/air/41/',
-        'https://www.defensenews.com/stories/air/61/',
-        'https://www.defensenews.com/stories/air/81/',
-        'https://www.defensenews.com/stories/air/101/',
-        'https://www.defensenews.com/stories/air/121/',
-        'https://www.defensenews.com/stories/air/141/',
-        'https://www.defensenews.com/stories/air/161/',
-        'https://www.defensenews.com/stories/air/181/',
-        'https://www.defensenews.com/stories/air/201/',
-        'https://www.defensenews.com/stories/air/221/',
-        'https://www.defensenews.com/stories/air/241/',
-        'https://www.defensenews.com/stories/air/261/',
-        'https://www.defensenews.com/stories/air/281/',
-        'https://www.defensenews.com/stories/air/301/',
-        'https://www.defensenews.com/stories/air/321/',
-        'https://www.defensenews.com/stories/air/341/',
-        'https://www.defensenews.com/stories/air/361/',
-        'https://www.defensenews.com/stories/air/381/',
-        'https://www.defensenews.com/stories/air/401/'
-    ]
+    name = "posts"
+    json_data = []
+
+    json_file = open('links.json')
+    for line in json_file:
+        json_data.append(line)
+
+    counter = 1
+    links_list = []
+    while counter < len(json_data) - 1:
+        if json_data[counter][-2] == ',':
+            json_data[counter] = json_data[counter][:-2]
+        temp_json = json.loads(json_data[counter])
+        #del temp_json['link'][-1]
+        for i, k in enumerate(temp_json['link']):
+            if k[:5] == 'https':
+                links_list.append(temp_json['link'][i])
+        counter += 1
+    start_urls = list(dict.fromkeys(links_list))
 
     def parse(self, response):
         post = response.css('div.pb-container')
-        test = post.css('div.result-listing')
-        for i in test:
-            yield {
-                'link': i.css('a::attr(href)').getall()
-            }
+        yield {
+            'title': post.css('h1::text').get(),
+            'content': post.css('p::text').getall()
+        }
 
-# test = post.css('div.result-listing')
-# for i in test: i.css('a::attr(href)').getall()
-# for i in test: i.css('h4::text').getall()
+
