@@ -6,10 +6,12 @@ from scrapy.spiders import CrawlSpider, Rule
 class PostsSpider(scrapy.Spider):
     name = "posts"
     json_data = []
-
-    json_file = open('links.json')
-    for line in json_file:
-        json_data.append(line)
+    try:
+        json_file = open('links.json')
+        for line in json_file:
+            json_data.append(line)
+    except OSError:
+        print('file not found')
 
     counter = 1
     links_list = []
