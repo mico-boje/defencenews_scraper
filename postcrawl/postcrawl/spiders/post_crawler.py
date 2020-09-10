@@ -25,12 +25,13 @@ class PostsSpider(scrapy.Spider):
                 links_list.append(temp_json['link'][i])
         counter += 1
     start_urls = list(dict.fromkeys(links_list))
-
+    #start_urls = ["https://www.defensenews.com/digital-show-dailies/euronaval/2018/10/24/naval-group-fincantieri-join-forces-to-survive-competitive-global-shipbuilding-industry/"]
     def parse(self, response):
+        # unicode(response.body.decode(response.encoding)).encode('utf-8')
         post = response.css('div.pb-container')
         yield {
-            'title': post.css('h1::text').get(),
-            'content': post.css('p::text').getall()
+            #'title': post.css('h1::text').get(),
+            'content': post.css('p *::text').getall(),
         }
 
 
