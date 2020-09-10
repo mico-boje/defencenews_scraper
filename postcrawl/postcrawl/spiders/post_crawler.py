@@ -10,7 +10,7 @@ class PostsSpider(scrapy.Spider):
         json_file = open('links.json')
         for line in json_file:
             json_data.append(line)
-    except OSError:
+    except IOError:
         print('file not found')
 
     counter = 1
